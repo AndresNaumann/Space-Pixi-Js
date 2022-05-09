@@ -1,9 +1,9 @@
-const appWidth = 800;
+const appWidth = window.innerWidth - 100;
 const appHeight = 600;
 
 const Application = PIXI.Application;
 const app = new PIXI.Application({
-  backgroundColor: 0x23395d,
+  backgroundColor: 0x000000,
   height: appHeight,
   width: appWidth,
 });
@@ -16,6 +16,7 @@ let xVel;
 let yVel;
 let xDisplacement = 100;
 let MouseX, MouseY;
+let scrollPosition = 0;
 let stars = [];
 
 // Star Class
@@ -76,8 +77,8 @@ class star {
     this.spinY = this.cos * this.orbitSpeed;
 
     // suck
-    this.posX += this.speedX * 0.5;
-    this.posY += this.speedY * 0.5;
+    this.posX += this.speedX * scrollPosition;
+    this.posY += this.speedY * scrollPosition;
 
     //spin
     this.posX += this.spinX;
@@ -91,6 +92,19 @@ window.addEventListener("mousemove", function (e) {
   MouseY = e.screenY - 200;
 });
 
+let d;
+
+if (Math.ceil(scrollPosition) >= -5 && Math.floor(scrollPosition) <= 5) {
+  window.addEventListener("wheel", function (event) {
+    if (event.deltaY > 0 && event.deltaY > -0.5) {
+      scrollPosition += event.deltaY / 1000;
+    } else if (event.deltaY < 0 && event.deltaY < 0.5) {
+      scrollPosition += event.deltaY / 1000;
+    }
+    console.log(scrollPosition);
+  });
+}
+
 // Creates a bunch of star objects
 for (let i = 0; i < 100; i++) {
   let randX = Math.random() * appWidth;
@@ -102,7 +116,7 @@ for (let i = 0; i < 100; i++) {
 app.ticker.add((delta) => loop(delta));
 
 let newBG = new Graphics();
-newBG.beginFill(0x23395d).drawRect(0, 0, appWidth, appHeight).endFill();
+newBG.beginFill(0x000000).drawRect(0, 0, appWidth, appHeight).endFill();
 
 function loop() {
   app.stage.removeChildren();
@@ -112,7 +126,15 @@ function loop() {
     stars[i].drawStar();
     stars[i].orbit();
   }
+
+  // document.getElementById("game-screen").onwheel = () => {
+  //   console.log(scrollPosition);
+  // };
 }
+
+// document.getElementById("game-screen").addEventListener("click", (e) => {
+//   console.log(scrollPosition);
+// });
 
 // TODO List
 // if mouse goes out of bounds, pause the game.
